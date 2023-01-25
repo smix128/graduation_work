@@ -6,7 +6,7 @@ services:
     depends_on:
       - yelb-appserver
     ports:
-      - 80:80
+      - 10000:80
     networks:
       - yelb-network
 
