@@ -52,7 +52,7 @@ redis_deploy:
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
   script: 
     - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm upgrade --install redis bitnami/redis
+    - helm upgrade --install redis bitnami/redis -f helm/redis-values.yml
   when: manual
 
 redis_delete:
