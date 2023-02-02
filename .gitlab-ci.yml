@@ -1,0 +1,31 @@
+variables:
+  YA_K8S_CLUSTER_NAME: "k8s-ya-cluster"
+stages:
+  - redis_deploy
+  - redis_delete
+
+redis_deploy:
+  stage: redis_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/terraform/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: 
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm upgrade --install redis bitnami/redis
+  when: manual
+
+redis_delete:
+  stage: redis_delete
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/terraform/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: helm delete redis
+  when: manual
