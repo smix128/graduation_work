@@ -6,7 +6,7 @@ stages:
 
 redis_deploy:
   stage: redis_deploy
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/terraform/centos-tools:4
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
   before_script:
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
@@ -20,7 +20,7 @@ redis_deploy:
 
 redis_delete:
   stage: redis_delete
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/terraform/centos-tools:4
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
   before_script:
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
