@@ -1,5 +1,5 @@
 #FROM bitnami/ruby:2.4.2-r1
-FROM bitnami/ruby:2.6.0
+FROM bitnami/ruby:2.6.0-r1
 MAINTAINER massimo@it20.info
 
 ################## BEGIN INSTALLATION ######################
