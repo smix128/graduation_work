@@ -16,6 +16,7 @@ stages:
 appserver_build:
   stage: appserver_build
   script:
+    - docker logout
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-appserver:$CI_PIPELINE_ID -f yelb-appserver/Dockerfile yelb-appserver/
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-appserver:$CI_PIPELINE_ID
@@ -26,6 +27,7 @@ appserver_build:
 ui_build:
   stage: ui_build
   script:
+    - docker logout
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-ui:$CI_PIPELINE_ID -f yelb-ui/Dockerfile yelb-ui/
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-ui:$CI_PIPELINE_ID
