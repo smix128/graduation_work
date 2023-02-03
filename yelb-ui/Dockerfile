@@ -5,7 +5,7 @@ MAINTAINER massimo@it20.info
 
 WORKDIR /
 
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli@15.1.4
 
 RUN npm install node-sass
 
