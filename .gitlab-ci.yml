@@ -7,6 +7,7 @@ variables:
 
 stages:
   - appserver_build
+  - ui_build
   - bd_init
   - test
   - redis_deploy
@@ -15,13 +16,19 @@ stages:
 appserver_build:
   stage: appserver_build
   script:
-    - docker logout
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID -f yelb-appserver/Dockerfile yelb-appserver/
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-appserver:$CI_PIPELINE_ID -f yelb-appserver/Dockerfile yelb-appserver/
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-appserver:$CI_PIPELINE_ID
   tags:
     - shell
   when: manual
+
+ui_build:
+  stage: ui_build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-ui:$CI_PIPELINE_ID -f yelb-ui/Dockerfile yelb-ui/
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-ui:$CI_PIPELINE_ID
 
 bd_init:
   stage: bd_init
