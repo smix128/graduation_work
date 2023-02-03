@@ -1,3 +1,11 @@
+#### COMMENTS
+in Dokcerfile yelb-appserver fix FROM version to bitnami/ruby:2.6.0-r1 and gem install ... --no-ri --no-rdoc to gem install ... --no-document
+
+
+
+
+
+
 #### Yelb architecture
 
 The current architecture layout is pretty straightforward. 
