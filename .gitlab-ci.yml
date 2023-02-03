@@ -29,6 +29,9 @@ ui_build:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-ui:$CI_PIPELINE_ID -f yelb-ui/Dockerfile yelb-ui/
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/yelb-ui:$CI_PIPELINE_ID
+  tags:
+    - shell
+  when: manual
 
 bd_init:
   stage: bd_init
