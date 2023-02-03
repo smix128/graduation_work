@@ -15,7 +15,8 @@ ENV LANG=en_us.UTF-8
 ENV LC_ALL=C.UTF-8
 ENV RACK_ENV=production
 
-RUN gem install sinatra --no-ri --no-rdoc
+#RUN gem install sinatra --no-ri --no-rdoc
+RUN gem install sinatra --no-rdoc
 RUN gem install redis --no-ri --no-rdoc
 ### hack to allow the setup of the pg gem (which would fail otherwise)
 RUN apt-get update
