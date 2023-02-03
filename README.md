@@ -1,6 +1,7 @@
 #### COMMENTS
 in Dockerfile yelb-appserver fix FROM version to bitnami/ruby:2.6.0-r1 and gem install ... --no-ri --no-rdoc to gem install ... --no-document
-in Dockerfile yelb-ui fix node ver 12.22 to 14.20
+update yelb-ui from https://github.com/mreferre/yelb.git
+
 
 
 
