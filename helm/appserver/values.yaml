@@ -39,6 +39,7 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 4567
+  target_port: 4567
 
 ingress:
   enabled: false
