@@ -82,8 +82,15 @@ appserver_deploy:
   variables:
     RACK_ENV: "custom"
     REDIS_SERVER_ENDPOINT:
-    YELB_DB_SERVER_ENDPOINT:
-  script: helm version
+    YELB_DB_SERVER_ENDPOINT: "${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: helm upgrade --install appserver --set YELB_DB_SERVER_ENDPOINT="${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
 
 redis_delete:
   stage: redis_delete
