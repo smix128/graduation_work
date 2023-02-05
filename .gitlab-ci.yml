@@ -11,6 +11,7 @@ stages:
   - bd_init
   - test
   - redis_deploy
+  - appserver_deploy
   - redis_delete
 
 appserver_build:
