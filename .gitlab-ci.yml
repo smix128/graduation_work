@@ -96,6 +96,7 @@ appserver_deploy:
                        --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" \
                        --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" \
                        -f helm/appserver/values.yaml
+  when: manual
 
 redis_delete:
   stage: redis_delete
