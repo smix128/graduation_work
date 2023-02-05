@@ -80,6 +80,7 @@ redis_deploy:
 
 appserver_deploy:
   stage: appserver_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
   variables:
     RACK_ENV: "custom"
     REDIS_SERVER_ENDPOINT: redis-master.default.svc.cluster.local
