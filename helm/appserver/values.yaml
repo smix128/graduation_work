@@ -1,6 +1,8 @@
 # Default values for appserver.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+RACK_ENV: ""
+REDIS_SERVER_ENDPOINT: ""
 YELB_DB_SERVER_ENDPOINT: ""
 replicaCount: 2
 
