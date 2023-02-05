@@ -10,6 +10,6 @@ spec:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.target_port }}
       protocol: TCP
-      name: "app_port"
+      name: "app-port"
   selector:
     {{- include "appserver.selectorLabels" . | nindent 4 }}
