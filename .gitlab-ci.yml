@@ -92,11 +92,11 @@ appserver_deploy:
     - yc config set token $YA_TOKEN
     - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-  script: helm upgrade --install appserver \
+  script: helm upgrade --install appserver helm/appserver \
                        --set RACK_ENV="${RACK_ENV}" \
                        --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" \
                        --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" \
-                       -f helm/appserver/values.yaml
+                       --values helm/appserver/values.yaml
   when: manual
 
 redis_delete:
