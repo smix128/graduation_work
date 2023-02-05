@@ -82,7 +82,7 @@ appserver_deploy:
   stage: appserver_deploy
   variables:
     RACK_ENV: "custom"
-    REDIS_SERVER_ENDPOINT:
+    REDIS_SERVER_ENDPOINT: redis-master.default.svc.cluster.local
     YELB_DB_SERVER_ENDPOINT: "${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
   before_script:
     - yc config profile create profile1
