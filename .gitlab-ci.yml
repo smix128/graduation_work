@@ -11,6 +11,7 @@ stages:
   - appserver_build
   - appserver_deploy
   - ui_build
+  - ui_deploy
   - appserver_delete
   - redis_delete
 
@@ -89,6 +90,14 @@ ui_build:
     - shell
   when: manual
 
+ui_deploy:
+  variables:
+    YELB_APPSERVER_ENDPOINT: <service_name>.default.svc.cluster.local
+  stage: ui_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+
+  needs: ['ui_build']
+
 appserver_delete:
   stage: appserver_delete
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
@@ -99,7 +108,7 @@ appserver_delete:
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
   script: 
-    - helm uninstall appserver --namespace
+    - helm uninstall appserver 
   when: manual
 
 redis_delete:
