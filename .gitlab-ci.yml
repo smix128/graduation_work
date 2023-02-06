@@ -12,6 +12,7 @@ stages:
   - test
   - redis_deploy
   - appserver_deploy
+  - appserver_delete
   - redis_delete
 
 appserver_build:
@@ -97,6 +98,20 @@ appserver_deploy:
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
     - kubectl create secret docker-registry regcred --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN # --docker-email=<your-email>
   script: helm upgrade --install appserver helm/appserver/ --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-appserver:$CI_PIPELINE_ID --set RACK_ENV="${RACK_ENV}" --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" --values helm/appserver/values.yaml
+  when: manual
+
+appserver_delete:
+  stage: appserver_delete
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: 
+    - helm delete appserver
+    - kubectl delete secret regcred
   when: manual
 
 redis_delete:
