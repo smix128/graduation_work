@@ -4,6 +4,8 @@ variables:
   PSQL_DB: "yelbdatabase"
   PSQL_DBUSER: "yelbdbuser"
   PSQL_DBPASSWORD: "yelbdbpassword"
+  APP_SERVER_NAME: "yelb-appserver"
+  APP_UI_NAME: "yelb-ui"
 
 stages:
   - redis_deploy
@@ -50,8 +52,8 @@ appserver_build:
   stage: appserver_build
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-appserver:$CI_PIPELINE_ID -f yelb-appserver/Dockerfile yelb-appserver/
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-appserver:$CI_PIPELINE_ID
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_SERVER_NAME:$CI_PIPELINE_ID -f yelb-appserver/Dockerfile yelb-appserver/
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_SERVER_NAME:$CI_PIPELINE_ID
   tags:
     - shell
   #rules:
@@ -73,26 +75,26 @@ appserver_deploy:
     - yc config set token $YA_TOKEN
     - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-    - kubectl create secret docker-registry temp-secret-appserver --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
-    - export PULL_SECRET=$(kubectl get secrets temp-secret-appserver -o jsonpath="{.data['\.dockerconfigjson']}")
-    - kubectl delete secrets temp-secret-appserver
+    - kubectl create secret docker-registry temp-secret-$APP_SERVER_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
+    - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_SERVER_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
+    - kubectl delete secrets temp-secret-$APP_SERVER_NAME
 
-  script: helm upgrade --install appserver helm/appserver/ --set imagePullSecrets=$PULL_SECRET --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-appserver:$CI_PIPELINE_ID --set RACK_ENV="${RACK_ENV}" --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" --values helm/appserver/values.yaml
+  script: helm upgrade --install $APP_SERVER_NAME helm/appserver/ --set imagePullSecrets=$PULL_SECRET --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$$APP_SERVER_NAME:$CI_PIPELINE_ID --set RACK_ENV="${RACK_ENV}" --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" --values helm/appserver/values.yaml
   needs: ['appserver_build']
 
 ui_build:
   stage: ui_build
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-ui:$CI_PIPELINE_ID -f yelb-ui/Dockerfile yelb-ui/
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-ui:$CI_PIPELINE_ID
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID -f yelb-ui/Dockerfile yelb-ui/
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID
   tags:
     - shell
   when: manual
 
 ui_deploy:
   variables:
-    YELB_APPSERVER_ENDPOINT: <service_name>.default.svc.cluster.local
+    YELB_APPSERVER_ENDPOINT: $APP_SERVER_NAME.default.svc.cluster.local
   stage: ui_deploy
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
   before_script:
@@ -101,11 +103,11 @@ ui_deploy:
     - yc config set folder-id $YA_FOLDER_ID
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-    - kubectl create secret docker-registry temp-secret-ui --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
-    - export PULL_SECRET=$(kubectl get secrets temp-secret-appserver -o jsonpath="{.data['\.dockerconfigjson']}")
-    - kubectl delete secrets temp-secret-ui
+    - kubectl create secret docker-registry temp-secret-$APP_UI_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
+    - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_UI_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
+    - kubectl delete secrets temp-secret-$APP_UI_NAME
 
-  script: helm upgrade --install ui helm/ui/ --set imagePullSecrets=$PULL_SECRET --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-ui:$CI_PIPELINE_ID --values helm/ui/values.yaml
+  script: helm upgrade --install ui helm/ui/ --set imagePullSecrets=$PULL_SECRET --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID --values helm/ui/values.yaml
   needs: ['ui_build']
 
 appserver_delete:
@@ -118,7 +120,7 @@ appserver_delete:
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
   script: 
-    - helm uninstall appserver 
+    - helm uninstall $APP_SERVER_NAME 
   when: manual
 
 redis_delete:
