@@ -21,7 +21,7 @@ spec:
         {{- include "appserver.selectorLabels" . | nindent 8 }}
     spec:
       imagePullSecrets:
-      - name: regcred
+      - name: temp-appserver-{{ .Release.Name }}
       serviceAccountName: {{ include "appserver.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
