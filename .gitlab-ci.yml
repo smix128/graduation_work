@@ -73,7 +73,7 @@ appserver_deploy:
     - yc config set token $YA_TOKEN
     - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-    - kubectl create ns $NAMESPACE
+    #- kubectl create ns $NAMESPACE
     - kubectl -n $NAMESPACE create secret docker-registry temp-secret-appserver --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
     - export PULL_SECRET=$(kubectl -n $NAMESPACE get secrets temp-secret-appserver -o jsonpath="{.data['\.dockerconfigjson']}")
     - kubectl -n $NAMESPACE delete secrets temp-secret-appserver
