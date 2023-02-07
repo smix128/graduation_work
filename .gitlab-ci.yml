@@ -15,6 +15,7 @@ stages:
   - ui_build
   - ui_deploy
   - appserver_delete
+  - ui_delete
   - redis_delete
 
 redis_deploy:
@@ -46,6 +47,7 @@ bd_init:
     - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('bucadibeppo', 0);"
     - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('chipotle', 0);"
     - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('ihop', 0);"
+  allow_failure: true
   when: manual
 
 appserver_build:
@@ -121,6 +123,19 @@ appserver_delete:
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
   script: 
     - helm uninstall $APP_SERVER_NAME 
+  when: manual
+
+ui_delete:
+  stage: ui_delete
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: 
+    - helm uninstall $APP_UI_NAME 
   when: manual
 
 redis_delete:
