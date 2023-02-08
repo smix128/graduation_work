@@ -18,15 +18,19 @@ stages:
   - ui_delete
   - redis_delete
 
-redis_deploy:
-  stage: redis_deploy
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+.yc_init:
   before_script:
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
     - yc config set folder-id $YA_FOLDER_ID
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+
+redis_deploy:
+  stage: redis_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  extends:
+    - .yc_init
   script: 
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm upgrade --install redis bitnami/redis -f helm/redis-values.yml
@@ -35,11 +39,8 @@ redis_deploy:
 bd_init:
   stage: bd_init
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-  before_script:
-    - yc config profile create profile1
-    - yc config set cloud-id $YA_CLOUD_ID
-    - yc config set folder-id $YA_FOLDER_ID
-    - yc config set token $YA_TOKEN
+  extends:
+    - .yc_init
   script:
     - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
     #- psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "CREATE TABLE restaurants (name char(30), count integer, PRIMARY KEY (name));"
@@ -83,13 +84,10 @@ appserver_deploy:
     RACK_ENV: "custom"
     REDIS_SERVER_ENDPOINT: redis-master.default.svc.cluster.local
     YELB_DB_SERVER_ENDPOINT: "${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
+  extends:
+    - .yc_init
   before_script:
-    - yc config profile create profile1
-    - yc config set cloud-id $YA_CLOUD_ID
-    - yc config set folder-id $YA_FOLDER_ID
-    - yc config set token $YA_TOKEN
     - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
-    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
     - kubectl create secret docker-registry temp-secret-$APP_SERVER_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
     - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_SERVER_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
     - kubectl delete secrets temp-secret-$APP_SERVER_NAME
