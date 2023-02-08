@@ -50,7 +50,7 @@ ingress:
     - host: 84.201.148.51.nip.io
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
