@@ -109,7 +109,7 @@ ui_deploy:
     - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_UI_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
     - kubectl delete secrets temp-secret-$APP_UI_NAME
 
-  script: helm upgrade --install ui helm/ui/ --set imagePullSecrets=$PULL_SECRET --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID --values helm/ui/values.yaml
+  script: helm upgrade --install ui helm/ui/ --set ingress.hosts.host=158.160.60.246.nip.io --set imagePullSecrets=$PULL_SECRET --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID --values helm/ui/values.yaml
   needs: ['ui_build']
 
 appserver_delete:
