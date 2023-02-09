@@ -119,7 +119,7 @@ ui_deploy:
     - kubectl create secret docker-registry temp-secret-$APP_UI_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
     - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_UI_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
     - export YC_BALANCER_ID=$(yc load-balancer network-load-balancer list | grep EXTERNAL | awk '{print $2}')
-    - YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id enpkqqfjrmf2ssqccllo | grep address | head -n1 | awk '{print $2}')
+    - YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
     - kubectl delete secrets temp-secret-$APP_UI_NAME
 
   script: 
