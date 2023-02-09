@@ -132,7 +132,7 @@ ui_deploy:
   script: 
     - | 
        helm upgrade --install ui helm/ui/ \
-       --set ingress.hosts[0].host=84.201.148.51.nip.io \
+       --set ingress.hosts[0].host=158.160.38.203.nip.io \
        --set imagePullSecrets=$PULL_SECRET \
        --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID \
        --values helm/ui/values.yaml
