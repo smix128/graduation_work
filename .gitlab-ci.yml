@@ -109,7 +109,7 @@ ui_deploy:
   stage: ui_deploy
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
   variables:
-    YELB_APPSERVER_ENDPOINT=$APP_SERVER_NAME.default.svc.cluster.local
+    YELB_APPSERVER_ENDPOINT: $APP_SERVER_NAME.default.svc.cluster.local
   before_script:
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
