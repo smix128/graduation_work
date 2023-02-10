@@ -126,7 +126,7 @@ ui_deploy:
        --set ingress.hosts[0].host=$YC_BALANCER_IP.nip.io \
        --set imagePullSecrets=$PULL_SECRET \
        --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID \
-       --set YELB_APPSERVER_ENDPOINT=$APP_SERVER_NAME.default.svc.cluster.local \
+      # --set YELB_APPSERVER_ENDPOINT=$APP_SERVER_NAME.default.svc.cluster.local \
        --values helm/ui/values.yaml
   
   needs: ['ui_build']
