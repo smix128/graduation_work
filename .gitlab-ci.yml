@@ -90,7 +90,7 @@ appserver_deploy:
        --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_SERVER_NAME:$CI_PIPELINE_ID \
        --set RACK_ENV="${RACK_ENV}" \
        --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" \
-       --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" \
+       --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}:6432" \
        --values helm/appserver/values.yaml
 
   needs: ['appserver_build']
