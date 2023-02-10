@@ -59,7 +59,8 @@ configure :custom do
   set :redishost, ENV['REDIS_SERVER_ENDPOINT']
   set :port, 4567
   set :yelbdbhost => ENV['YELB_DB_SERVER_ENDPOINT']
-  set :yelbdbport => 6432
+#  set :yelbdbport => 6432
+  set :yelbdbport, 6432
   set :yelbddbrestaurants => ENV['YELB_DDB_RESTAURANTS']
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
