@@ -108,6 +108,8 @@ ui_build:
 ui_deploy:
   stage: ui_deploy
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  variables:
+    YELB_APPSERVER_ENDPOINT=$APP_SERVER_NAME.default.svc.cluster.local
   before_script:
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
@@ -126,7 +128,6 @@ ui_deploy:
        --set ingress.hosts[0].host=$YC_BALANCER_IP.nip.io \
        --set imagePullSecrets=$PULL_SECRET \
        --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID \
-      # --set YELB_APPSERVER_ENDPOINT=$APP_SERVER_NAME.default.svc.cluster.local \
        --values helm/ui/values.yaml
   
   needs: ['ui_build']
