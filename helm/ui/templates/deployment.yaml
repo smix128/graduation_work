@@ -31,9 +31,6 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: YELB_APPSERVER_ENDPOINT
-            value: {{ .Values.YELB_APPSERVER_ENDPOINT }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
