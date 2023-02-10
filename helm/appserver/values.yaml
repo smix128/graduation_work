@@ -4,6 +4,7 @@
 RACK_ENV: ""
 REDIS_SERVER_ENDPOINT: ""
 YELB_DB_SERVER_ENDPOINT: ""
+YELB_DB_SERVER_PORT: ""
 replicaCount: 1
 
 image:
