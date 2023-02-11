@@ -13,7 +13,7 @@ COPY modules modules
 
 ENV LANG=en_us.UTF-8
 ENV LC_ALL=C.UTF-8
-ENV RACK_ENV=production
+ENV RACK_ENV=custom
 
 #RUN gem install sinatra --no-ri --no-rdoc
 RUN gem install sinatra --no-document
