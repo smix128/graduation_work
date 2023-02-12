@@ -38,8 +38,8 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 6432
-  target_port: 6432
+  port: 5432
+  target_port: 5432
 
 ingress:
   enabled: false
