@@ -8,6 +8,9 @@ variables:
   APP_UI_NAME: "yelb-ui"
 
 stages:
+  - test_db_build
+  - test_db_deploy
+  - test_db_delete
   - redis_deploy
   - bd_init
   - appserver_build
