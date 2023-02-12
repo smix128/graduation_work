@@ -4,7 +4,7 @@
 RACK_ENV: ""
 REDIS_SERVER_ENDPOINT: ""
 YELB_DB_SERVER_ENDPOINT: ""
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: ""
