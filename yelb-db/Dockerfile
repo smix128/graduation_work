@@ -1,4 +1,4 @@
-FROM postgres:10.0
+FROM postgres:11.0
 MAINTAINER massimo@it20.info
 
 WORKDIR /
