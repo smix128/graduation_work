@@ -32,7 +32,7 @@ configure :production do
   set :redishost, "redis-server"
   set :port, 4567
   set :yelbdbhost => "yelb-db"
-  set :yelbdbport => 5432
+  set :yelbdbport => 6432
   set :yelbddbrestaurants => ENV['YELB_DDB_RESTAURANTS']
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
@@ -41,7 +41,7 @@ configure :test do
   set :redishost, "redis-server"
   set :port, 4567
   set :yelbdbhost => "yelb-db"
-  set :yelbdbport => 5432
+  set :yelbdbport => 6432
   set :yelbddbrestaurants => ENV['YELB_DDB_RESTAURANTS']
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
@@ -50,7 +50,7 @@ configure :development do
   set :redishost, "localhost"
   set :port, 4567
   set :yelbdbhost => "localhost"
-  set :yelbdbport => 5432
+  set :yelbdbport => 6432
   set :yelbddbrestaurants => ENV['YELB_DDB_RESTAURANTS']
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
