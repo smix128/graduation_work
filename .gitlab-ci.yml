@@ -117,7 +117,7 @@ appserver_deploy:
   variables:
     RACK_ENV: "custom"
     REDIS_SERVER_ENDPOINT: redis-master.default.svc.cluster.local
-    YELB_DB_SERVER_PORT: "\"5432\""
+    YELB_DB_SERVER_PORT: "\"6432\""
     #YELB_DB_SERVER_ENDPOINT: "c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net" #!!!!!!!!!!!!!
     YELB_DB_SERVER_ENDPOINT: yelb-db.default.svc.cluster.local
   before_script:
