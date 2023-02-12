@@ -15,7 +15,7 @@ def restaurantsdbread(restaurant)
         restaurantcount = restaurantrecord.item['restaurantcount']
     else 
         con = PG.connect  :host => $yelbdbhost,
-                        :port => $yelbdbport,
+                        :port => 6432,
                         :dbname => 'yelbdatabase',
                         :user => 'yelbdbuser',
                         :password => 'yelbdbpassword'

@@ -8,9 +8,9 @@ variables:
   APP_UI_NAME: "yelb-ui"
 
 stages:
-  - test_db_build
-  - test_db_deploy
-  - test_db_delete
+  #- test_db_build
+  #- test_db_deploy
+  #- test_db_delete
   - redis_deploy
   - bd_init
   - appserver_build
@@ -29,49 +29,49 @@ stages:
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
 
-test_db_build:
-  stage: test_db_build
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-db:$CI_PIPELINE_ID -f yelb-db/Dockerfile yelb-db/
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-db:$CI_PIPELINE_ID
-  tags:
-    - shell
-  when: manual
-
-test_db_deploy:
-  stage: test_db_deploy
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-  before_script:
-    - yc config profile create profile1
-    - yc config set cloud-id $YA_CLOUD_ID
-    - yc config set folder-id $YA_FOLDER_ID
-    - yc config set token $YA_TOKEN
-    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-    - kubectl create secret docker-registry temp-secret-yelb-db --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
-    - export PULL_SECRET=$(kubectl get secrets temp-secret-yelb-db -o jsonpath="{.data['\.dockerconfigjson']}")
-    - kubectl delete secrets temp-secret-yelb-db
-  script: 
-    - | 
-       helm upgrade --install yelb-db helm/yelb-db/ \
-       --set imagePullSecrets=$PULL_SECRET \
-       --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-db:$CI_PIPELINE_ID \
-       --values helm/yelb-db/values.yaml
-
-  needs: ['test_db_build']
-
-test_db_delete:
-  stage: test_db_delete
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-  before_script:
-    - yc config profile create profile1
-    - yc config set cloud-id $YA_CLOUD_ID
-    - yc config set folder-id $YA_FOLDER_ID
-    - yc config set token $YA_TOKEN
-    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-  script: 
-    - helm uninstall yelb-db 
-  when: manual
+#test_db_build:
+#  stage: test_db_build
+#  script:
+#    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+#    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-db:$CI_PIPELINE_ID -f yelb-db/Dockerfile yelb-db/
+#    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-db:$CI_PIPELINE_ID
+#  tags:
+#    - shell
+#  when: manual
+#
+#test_db_deploy:
+#  stage: test_db_deploy
+#  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+#  before_script:
+#    - yc config profile create profile1
+#    - yc config set cloud-id $YA_CLOUD_ID
+#    - yc config set folder-id $YA_FOLDER_ID
+#    - yc config set token $YA_TOKEN
+#    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+#    - kubectl create secret docker-registry temp-secret-yelb-db --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
+#    - export PULL_SECRET=$(kubectl get secrets temp-secret-yelb-db -o jsonpath="{.data['\.dockerconfigjson']}")
+#    - kubectl delete secrets temp-secret-yelb-db
+#  script: 
+#    - | 
+#       helm upgrade --install yelb-db helm/yelb-db/ \
+#       --set imagePullSecrets=$PULL_SECRET \
+#       --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-db:$CI_PIPELINE_ID \
+#       --values helm/yelb-db/values.yaml
+#
+#  needs: ['test_db_build']
+#
+#test_db_delete:
+#  stage: test_db_delete
+#  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+#  before_script:
+#    - yc config profile create profile1
+#    - yc config set cloud-id $YA_CLOUD_ID
+#    - yc config set folder-id $YA_FOLDER_ID
+#    - yc config set token $YA_TOKEN
+#    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+#  script: 
+#    - helm uninstall yelb-db 
+#  when: manual
 
 redis_deploy:
   stage: redis_deploy
@@ -119,15 +119,15 @@ appserver_deploy:
     REDIS_SERVER_ENDPOINT: redis-master.default.svc.cluster.local
     #YELB_DB_SERVICE_PORT: "\"6432\""
     #YELB_DB_SERVER_ENDPOINT: "c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net" #!!!!!!!!!!!!!
-    YELB_DB_SERVER_ENDPOINT: yelb-db.default.svc.cluster.local
+    #YELB_DB_SERVER_ENDPOINT: yelb-db.default.svc.cluster.local
   before_script:
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
     - yc config set folder-id $YA_FOLDER_ID
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-    #- export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
-    #- export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
+    - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
+    - export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
     - kubectl create secret docker-registry temp-secret-$APP_SERVER_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
     - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_SERVER_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
     - kubectl delete secrets temp-secret-$APP_SERVER_NAME

@@ -26,7 +26,7 @@ def restaurantsdbupdate(restaurant)
         restaurantrecord = dynamodb.update_item(params)
     else 
         con = PG.connect  :host => $yelbdbhost,
-                      :port => $yelbdbport,
+                      :port => 6432,
                       :dbname => 'yelbdatabase',
                       :user => 'yelbdbuser',
                       :password => 'yelbdbpassword'
