@@ -38,8 +38,8 @@ spec:
             value: {{ .Values.REDIS_SERVER_ENDPOINT }}
           - name: YELB_DB_SERVER_ENDPOINT
             value: {{ .Values.YELB_DB_SERVER_ENDPOINT }}
-          - name: YELB_DB_SERVER_PORT
-            value: {{ .Values.YELB_DB_SERVER_PORT }}
+          - name: YELB_DB_SERVICE_PORT
+            value: {{ .Values.YELB_DB_SERVICE_PORT }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
