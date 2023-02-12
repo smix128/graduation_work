@@ -126,7 +126,7 @@ appserver_deploy:
     - yc config set folder-id $YA_FOLDER_ID
     - yc config set token $YA_TOKEN
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
-    - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
+    #- export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
     #- export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
     - kubectl create secret docker-registry temp-secret-$APP_SERVER_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
     - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_SERVER_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
