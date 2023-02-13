@@ -18,6 +18,7 @@ stages:
 
 .yc_init:
   before_script:
+    - set -x
     - yc config profile create profile1
     - yc config set cloud-id $YA_CLOUD_ID
     - yc config set folder-id $YA_FOLDER_ID
