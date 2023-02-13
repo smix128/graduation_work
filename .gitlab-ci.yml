@@ -66,7 +66,7 @@ db_init:
 .var_appserver:
   variables:
     APP_NAME: "yelb-appserver"
-    REPLICAS: ""
+    REPLICAS: "2"
     RACK_ENV: "custom"
     REDIS_SERVER_ENDPOINT: "redis-master.default.svc.cluster.local"
     HELM_ADDITIONAL_ARGS: "
@@ -79,8 +79,9 @@ db_init:
 .var_ui:
   variables:
     APP_NAME: "yelb-ui"
-    REPLICAS: ""
+    REPLICAS: "2"
     HELM_ADDITIONAL_ARGS: "
+      --set replicaCount=${REPLICAS}
       --set ingress.hosts[0].host=$YC_BALANCER_IP.nip.io
       "
 
