@@ -3,6 +3,7 @@ include:
 
 stages:
   - redis_deploy
+  - redis_delete
   - db_init
   - build
   - deploy
