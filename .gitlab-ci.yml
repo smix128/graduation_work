@@ -97,6 +97,7 @@ db_init:
   when: manual
 
 .helm_deploy: 
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
   script: |
     kubectl create secret docker-registry temp-secret-$APP_NAME \
       --docker-server=$CI_REGISTRY \
