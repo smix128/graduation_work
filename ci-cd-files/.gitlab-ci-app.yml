@@ -1,0 +1,43 @@
+appserver_build:
+  stage: build
+  extends:
+    - .var_appserver
+    - .build_command
+  when: manual
+
+appserver_deploy:
+  stage: deploy
+  extends:
+    - .yc_init
+    - .var_appserver
+    - .helm_deploy
+  when: manual
+
+appserver_delete:
+  stage: delete
+  extends:
+    - .yc_init
+    - .helm_delete
+  when: manual
+
+ui_build:
+  stage: build
+  extends:
+    - .var_ui
+    - .build_command
+  when: manual
+
+ui_deploy:
+  stage: deploy
+  extends:
+    - .yc_init
+    - .var_ui
+    - .helm_deploy
+  when: manual
+
+ui_delete:
+  stage: delete
+  extends:
+    - .yc_init
+    - .helm_delete
+  when: manual

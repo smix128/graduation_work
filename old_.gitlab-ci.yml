@@ -1,0 +1,168 @@
+variables:
+  YA_K8S_CLUSTER_NAME: "k8s-ya-cluster"
+  YA_POSTGRESQL_CLUSTER_NAME: "postgresql-cluster"
+  PSQL_DB: "yelbdatabase"
+  PSQL_DBUSER: "yelbdbuser"
+  PSQL_DBPASSWORD: "yelbdbpassword"
+  APP_SERVER_NAME: "yelb-appserver"
+  APP_UI_NAME: "yelb-ui"
+
+stages:
+  - redis_deploy
+  - bd_init
+  - appserver_build
+  - appserver_deploy
+  - ui_build
+  - ui_deploy
+  - appserver_delete
+  - ui_delete
+  - redis_delete
+
+.yc_init:
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+
+redis_deploy:
+  stage: redis_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  extends:
+    - .yc_init
+  script: 
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm upgrade --install redis bitnami/redis -f helm/redis-values.yml
+  when: manual
+
+bd_init:
+  stage: bd_init
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  extends:
+    - .yc_init
+  script:
+    - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
+    - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "CREATE TABLE restaurants (name char(30), count integer, PRIMARY KEY (name));"
+    - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('outback', 0);"
+    - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('bucadibeppo', 0);"
+    - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('chipotle', 0);"
+    - psql -a postgresql://${PSQL_DBUSER}:${PSQL_DBPASSWORD}@c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net:6432/${PSQL_DB}?sslmode=require -c "INSERT INTO restaurants (name, count) VALUES ('ihop', 0);"
+  allow_failure: true
+  when: manual
+
+appserver_build:
+  stage: appserver_build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_SERVER_NAME:$CI_PIPELINE_ID -f yelb-appserver/Dockerfile yelb-appserver/
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_SERVER_NAME:$CI_PIPELINE_ID
+  tags:
+    - shell
+  #rules:
+  #  - changes:
+  #      - yelb-appserver/*
+  when: manual
+
+appserver_deploy:
+  stage: appserver_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  variables:
+    RACK_ENV: "custom"
+    REDIS_SERVER_ENDPOINT: redis-master.default.svc.cluster.local
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+    - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
+    - export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
+    - kubectl create secret docker-registry temp-secret-$APP_SERVER_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
+    - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_SERVER_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
+    - kubectl delete secrets temp-secret-$APP_SERVER_NAME
+
+  script: 
+    - | 
+       helm upgrade --install $APP_SERVER_NAME helm/appserver/ \
+       --set imagePullSecrets=$PULL_SECRET \
+       --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_SERVER_NAME:$CI_PIPELINE_ID \
+       --set RACK_ENV="${RACK_ENV}" \
+       --set REDIS_SERVER_ENDPOINT="${REDIS_SERVER_ENDPOINT}" \
+       --set YELB_DB_SERVER_ENDPOINT="${YELB_DB_SERVER_ENDPOINT}" \
+       --values helm/appserver/values.yaml
+
+  needs: ['appserver_build']
+
+ui_build:
+  stage: ui_build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID -f yelb-ui/Dockerfile yelb-ui/
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID
+  tags:
+    - shell
+  when: manual
+
+ui_deploy:
+  stage: ui_deploy
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+    - kubectl create secret docker-registry temp-secret-$APP_UI_NAME --docker-server=$CI_REGISTRY --docker-username=gitlab-ci-token --docker-password=$CI_BUILD_TOKEN
+    - export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_UI_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
+    - export YC_BALANCER_ID=$(yc load-balancer network-load-balancer list | grep EXTERNAL | awk '{print $2}')
+    - YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id $YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
+    - kubectl delete secrets temp-secret-$APP_UI_NAME
+
+  script: 
+    - | 
+       helm upgrade --install $APP_UI_NAME helm/ui/ \
+       --set ingress.hosts[0].host=$YC_BALANCER_IP.nip.io \
+       --set imagePullSecrets=$PULL_SECRET \
+       --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_UI_NAME:$CI_PIPELINE_ID \
+       --values helm/ui/values.yaml
+  
+  needs: ['ui_build']
+
+appserver_delete:
+  stage: appserver_delete
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: 
+    - helm uninstall $APP_SERVER_NAME 
+  when: manual
+
+ui_delete:
+  stage: ui_delete
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: 
+    - helm uninstall $APP_UI_NAME 
+  when: manual
+
+redis_delete:
+  stage: redis_delete
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  before_script:
+    - yc config profile create profile1
+    - yc config set cloud-id $YA_CLOUD_ID
+    - yc config set folder-id $YA_FOLDER_ID
+    - yc config set token $YA_TOKEN
+    - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
+  script: helm uninstall redis
+  when: manual
