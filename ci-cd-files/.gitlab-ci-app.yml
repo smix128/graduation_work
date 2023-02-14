@@ -10,7 +10,6 @@ appserver_deploy:
     - .var_appserver
     - .yc_init
     - .helm_deploy
-  needs: ['appserver_build']
 
 appserver_delete:
   stage: delete
@@ -31,7 +30,6 @@ ui_deploy:
     - .var_ui
     - .yc_init
     - .helm_deploy
-  needs: ['ui_build']
   
 ui_delete:
   stage: delete

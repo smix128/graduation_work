@@ -14,8 +14,6 @@ include:
     REPLICAS: "2"
 
 stages:
-  - redis_deploy_db_init
-#  - redis_delete
   - build
   - deploy
   - delete
@@ -31,25 +29,6 @@ stages:
     - export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
     - export YC_BALANCER_ID=$(yc load-balancer network-load-balancer list | grep EXTERNAL | awk '{print $2}')
     - export YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id $YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
-
-redis_deploy_db_init:
-  stage: redis_deploy_db_init
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-  extends:
-    - .yc_init
-  script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm upgrade --install redis bitnami/redis -f helm/redis-values.yml
-    - chmod +x db_init.sh
-    - ./db_init.sh
-
-#redis_delete:
-#  stage: redis_delete
-#  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-#  extends:
-#    - .yc_init
-#  script: helm uninstall redis
-#  when: manual
 
 .build_command:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
