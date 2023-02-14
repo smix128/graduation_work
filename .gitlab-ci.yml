@@ -1,12 +1,12 @@
 include:
   - local: '/ci-cd-files/.gitlab-ci-app.yml'
 
-variables:
-  YA_K8S_CLUSTER_NAME: "k8s-ya-cluster"
-  YA_POSTGRESQL_CLUSTER_NAME: "postgresql-cluster"
-  PSQL_DB: "yelbdatabase"
-  PSQL_DBUSER: "yelbdbuser"
-  PSQL_DBPASSWORD: "yelbdbpassword"
+#variables:
+#  YA_K8S_CLUSTER_NAME: "k8s-ya-cluster"
+#  YA_POSTGRESQL_CLUSTER_NAME: "postgresql-cluster"
+#  PSQL_DB: "yelbdatabase"
+#  PSQL_DBUSER: "yelbdbuser"
+#  PSQL_DBPASSWORD: "yelbdbpassword"
 
 .var_appserver:
   variables:
