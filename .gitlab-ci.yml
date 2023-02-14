@@ -15,7 +15,7 @@ include:
 
 stages:
   - redis_deploy_db_init
-  - redis_delete
+#  - redis_delete
   - build
   - deploy
   - delete
@@ -42,15 +42,14 @@ redis_deploy_db_init:
     - ./db_init.sh
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm upgrade --install redis bitnami/redis -f helm/redis-values.yml
-  when: manual
 
-redis_delete:
-  stage: redis_delete
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-  extends:
-    - .yc_init
-  script: helm uninstall redis
-  when: manual
+#redis_delete:
+#  stage: redis_delete
+#  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+#  extends:
+#    - .yc_init
+#  script: helm uninstall redis
+#  when: manual
 
 .build_command:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
@@ -61,7 +60,6 @@ redis_delete:
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
   tags: 
     - shell
-  when: manual
 
 .helm_deploy: 
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
