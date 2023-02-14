@@ -28,7 +28,6 @@ stages:
     - export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
     - export YC_BALANCER_ID=$(yc load-balancer network-load-balancer list | grep EXTERNAL | awk '{print $2}')
     - export YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id $YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
-    - export HELM_ADDITIONAL_ARGS="${HELM_ADDITIONAL_ARGS}"
 
 redis_deploy:
   stage: redis_deploy
@@ -98,18 +97,22 @@ db_init:
 
 .helm_deploy: 
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
-  script: |
-    kubectl create secret docker-registry temp-secret-$APP_NAME \
-      --docker-server=$CI_REGISTRY \
-      --docker-username=gitlab-ci-token \
-      --docker-password=$CI_BUILD_TOKEN
-    export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
-    kubectl delete secrets temp-secret-$APP_NAME
-    set -x
-    helm upgrade --install $APP_NAME helm/$APP_NAME/ --values helm/$APP_NAME/values.yaml \
-      --set imagePullSecrets=$PULL_SECRET \
-      --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID \
-      $HELM_ADDITIONAL_ARGS 
+  script: 
+    - |
+       kubectl create secret docker-registry temp-secret-$APP_NAME \
+       --docker-server=$CI_REGISTRY \
+       --docker-username=gitlab-ci-token \
+       --docker-password=$CI_BUILD_TOKEN
+       export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
+       kubectl delete secrets temp-secret-$APP_NAME
+       set -x
+       helm upgrade --install $APP_NAME helm/$APP_NAME/ --values helm/$APP_NAME/values.yaml \
+       --set imagePullSecrets=$PULL_SECRET \
+       --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID \
+       --set replicaCount=${REPLICAS} \
+       --set RACK_ENV=${RACK_ENV} \
+       --set REDIS_SERVER_ENDPOINT=${REDIS_SERVER_ENDPOINT} \
+       --set YELB_DB_SERVER_ENDPOINT=${YELB_DB_SERVER_ENDPOINT}
   dependencies: []
 
 .helm_delete:
