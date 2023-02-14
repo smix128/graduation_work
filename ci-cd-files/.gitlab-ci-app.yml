@@ -8,9 +8,9 @@ appserver_build:
 appserver_deploy:
   stage: deploy
   extends:
-    - .var_appserver
-    - .yc_init
     - .helm_deploy
+    - .yc_init
+    - .var_appserver
   when: manual
 
 appserver_delete:
