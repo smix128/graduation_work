@@ -38,10 +38,10 @@ redis_deploy_db_init:
   extends:
     - .yc_init
   script:
-    - chmod +x db_init.sh
-    - ./db_init.sh
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm upgrade --install redis bitnami/redis -f helm/redis-values.yml
+    - chmod +x db_init.sh
+    - ./db_init.sh
 
 #redis_delete:
 #  stage: redis_delete
