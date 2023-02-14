@@ -105,6 +105,10 @@ db_init:
     export PULL_SECRET=$(kubectl get secrets temp-secret-$APP_NAME -o jsonpath="{.data['\.dockerconfigjson']}")
     kubectl delete secrets temp-secret-$APP_NAME
     set -x
+    export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
+    export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
+    export YC_BALANCER_ID=$(yc load-balancer network-load-balancer list | grep EXTERNAL | awk '{print $2}')
+    export YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id $YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
     helm upgrade --install $APP_NAME helm/$APP_NAME/ --values helm/$APP_NAME/values.yaml \
       --set imagePullSecrets=$PULL_SECRET \
       --set image.repository=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID \
