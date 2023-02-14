@@ -68,6 +68,7 @@ db_init:
     REPLICAS: "2"
     RACK_ENV: "custom"
     REDIS_SERVER_ENDPOINT: "redis-master.default.svc.cluster.local"
+    YELB_DB_SERVER_ENDPOINT: $YELB_DB_SERVER_ENDPOINT
     HELM_ADDITIONAL_ARGS: "
       --set replicaCount=${REPLICAS}
       --set RACK_ENV=${RACK_ENV} \
