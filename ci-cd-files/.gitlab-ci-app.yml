@@ -8,8 +8,8 @@ appserver_build:
 appserver_deploy:
   stage: deploy
   extends:
-    - .yc_init
     - .var_appserver
+    - .yc_init
     - .helm_deploy
   when: manual
 
@@ -30,8 +30,8 @@ ui_build:
 ui_deploy:
   stage: deploy
   extends:
-    - .yc_init
     - .var_ui
+    - .yc_init
     - .helm_deploy
   when: manual
 
