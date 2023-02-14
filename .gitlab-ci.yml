@@ -15,6 +15,7 @@ include:
 
 stages:
   - build
+  - helm_lint
   - deploy
   - delete
 
@@ -39,6 +40,11 @@ stages:
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
   tags: 
     - shell
+
+.helm_lint:
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  stage: helm_lint
+  script: helm lint helm/$APP_NAME/
 
 .helm_deploy: 
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
