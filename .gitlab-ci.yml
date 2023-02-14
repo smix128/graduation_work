@@ -112,7 +112,8 @@ db_init:
        --set replicaCount=${REPLICAS} \
        --set RACK_ENV=${RACK_ENV} \
        --set REDIS_SERVER_ENDPOINT=${REDIS_SERVER_ENDPOINT} \
-       --set YELB_DB_SERVER_ENDPOINT=${YELB_DB_SERVER_ENDPOINT}
+       --set YELB_DB_SERVER_ENDPOINT=${YELB_DB_SERVER_ENDPOINT} \
+       --set ingress.hosts[0].host=$YC_BALANCER_IP.nip.io
   dependencies: []
 
 .helm_delete:
