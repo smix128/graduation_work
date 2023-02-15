@@ -46,9 +46,7 @@ stages:
 yaml_lint:
   stage: yaml_lint
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
-  script: yamllint -c yamllint.yaml .
-  
-
+  script: yamllint -c yamllint.yaml .gitlab-ci.yml
 
 .helm_lint:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
