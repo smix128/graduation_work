@@ -46,7 +46,7 @@ stages:
 yaml_lint:
   stage: yaml_lint
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
-  script: yamllint -d relaxed .
+  script: yamllint -c yamllint.yaml .
   
 
 
