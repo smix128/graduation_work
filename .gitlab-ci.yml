@@ -55,7 +55,10 @@ yaml_lint:
 
 test:
   stage: test
-  script: docker-compose up
+  script: 
+    - docker-compose up -d
+    - curl localhost
+    - docker-compose down -v
   tags:
     - shell
 
