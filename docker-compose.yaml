@@ -1,5 +1,5 @@
 ---
-version: "3.0"
+version: "3.7"
 services:
   yelb-ui:
     image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-ui:$CI_PIPELINE_ID
@@ -20,7 +20,7 @@ services:
   yelb-db:
     image: mreferre/yelb-db:0.5
     environment:
-      - POSTGRES_PASSWORD=yelbdbpassword
-      - POSTGRES_USER=yelbdbuser
-      - POSTGRES_PORT=6432
+      POSTGRES_PASSWORD=yelbdbpassword
+      POSTGRES_USER=yelbdbuser
+      POSTGRES_PORT=6432
 ...

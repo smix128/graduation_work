@@ -28,6 +28,7 @@ appserver_deploy:
     - .var_appserver
     - .yc_init
     - .helm_deploy
+  when: manual
 
 ui_deploy:
   stage: deploy
@@ -35,6 +36,7 @@ ui_deploy:
     - .var_ui
     - .yc_init
     - .helm_deploy
+  when: manual
 
 appserver_delete:
   stage: delete
