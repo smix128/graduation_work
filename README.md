@@ -1,7 +1,12 @@
+slurm-io
+61unH311vClaS8NxK986m9Q0M
+
 #### COMMENTS
 Для экономии ресурсов у redis отключены persistence и реплики. 
 in Dockerfile yelb-appserver fix FROM version to bitnami/ruby:2.6.0-r1 and gem install ... --no-ri --no-rdoc to gem install ... --no-document
 update yelb-ui from https://github.com/mreferre/yelb.git
+
+
 
 
 
