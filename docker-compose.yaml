@@ -20,7 +20,7 @@ services:
   yelb-db:
     image: mreferre/yelb-db:0.5
     environment:
-      POSTGRES_PASSWORD=yelbdbpassword
-      POSTGRES_USER=yelbdbuser
-      POSTGRES_PORT=6432
+      POSTGRES_PASSWORD: yelbdbpassword
+      POSTGRES_USER: yelbdbuser
+      POSTGRES_PORT: 6432
 ...
