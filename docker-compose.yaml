@@ -1,0 +1,26 @@
+---
+version: "3.7"
+services:
+  yelb-ui:
+    image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
+    depends_on:
+      - yelb-appserver
+    ports:
+      - 80:80
+
+  yelb-appserver:
+    image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
+    depends_on:
+      - redis-server
+      - yelb-db
+
+  redis-server:
+    image: redis:4.0.2
+
+  yelb-db:
+    image: mreferre/yelb-db:0.5
+    environment:
+      - POSTGRES_PASSWORD=yelbdbpassword
+      - POSTGRES_USER=yelbdbuser
+      - POSTGRES_PORT=6432
+...

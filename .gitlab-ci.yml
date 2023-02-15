@@ -18,6 +18,7 @@ stages:
   - yaml_lint
   - helm_lint
   - build
+  - test
   - deploy
   - delete
 
@@ -51,6 +52,13 @@ yaml_lint:
 .helm_lint:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
   script: helm lint helm/$APP_NAME/
+
+test:
+  stage: test
+  image: docker/compose:1.27.4
+  script: docker-compose up
+  tags:
+    - shell
 
 .helm_deploy:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
