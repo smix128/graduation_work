@@ -1,5 +1,5 @@
 ---
-version: "3.7"
+version: "3.0"
 services:
   yelb-ui:
     image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-ui:$CI_PIPELINE_ID
