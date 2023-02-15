@@ -14,8 +14,8 @@ include:
     REPLICAS: "2"
 
 stages:
-  - build
   - helm_lint
+  - build
   - deploy
   - delete
 

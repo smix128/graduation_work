@@ -1,15 +1,3 @@
-appserver_build:
-  stage: build
-  extends:
-    - .var_appserver
-    - .build_command
-
-ui_build:
-  stage: build
-  extends:
-    - .var_ui
-    - .build_command
-
 apserver_helm_lint:
   stage: helm_lint
   extends:
@@ -21,6 +9,18 @@ ui_helm_lint:
   extends:
     - .var_ui
     - .helm_lint
+
+appserver_build:
+  stage: build
+  extends:
+    - .var_appserver
+    - .build_command
+
+ui_build:
+  stage: build
+  extends:
+    - .var_ui
+    - .build_command
 
 appserver_deploy:
   stage: deploy
