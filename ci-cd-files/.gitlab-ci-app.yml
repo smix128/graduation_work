@@ -1,4 +1,4 @@
-apserver_helm_lint:
+appserver_helm_lint:
   stage: helm_lint
   extends:
     - .var_appserver

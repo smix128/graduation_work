@@ -14,6 +14,7 @@ include:
     REPLICAS: "2"
 
 stages:
+  - yaml_lint
   - helm_lint
   - build
   - deploy
@@ -41,9 +42,13 @@ stages:
   tags: 
     - shell
 
+yaml_lint:
+  stage: yaml_lint
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
+  scrpit: yamlint .
+
 .helm_lint:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
-  stage: helm_lint
   script: helm lint helm/$APP_NAME/
 
 .helm_deploy: 
