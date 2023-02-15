@@ -32,7 +32,7 @@ stages:
     - export YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id $YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
 
 .build_command:
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
@@ -42,12 +42,12 @@ stages:
     - shell
 
 .helm_lint:
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
   stage: helm_lint
   script: helm lint helm/$APP_NAME/
 
 .helm_deploy: 
-  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:4
+  image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
   script: |
     kubectl create secret docker-registry temp-secret-$APP_NAME \
       --docker-server=$CI_REGISTRY \
