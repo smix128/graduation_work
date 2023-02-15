@@ -43,24 +43,20 @@ stages:
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
   tags:
     - shell
-  when: manual
 
 yaml_lint:
   stage: yaml_lint
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
   script: yamllint -c yamllint.yaml .gitlab-ci.yml
-  when: never
 
 .helm_lint:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
   script: helm lint helm/$APP_NAME/
-  when: never
 
 test:
   stage: test
   image: docker/compose:1.27.4
   script: docker-compose up
-  when: manual
 
 .helm_deploy:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
