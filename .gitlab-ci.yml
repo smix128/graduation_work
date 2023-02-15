@@ -1,3 +1,4 @@
+---
 include:
   - local: '/ci-cd-files/.gitlab-ci-app.yml'
 
@@ -6,7 +7,7 @@ include:
     APP_NAME: "yelb-appserver"
     REPLICAS: "2"
     RACK_ENV: "custom"
-    REDIS_SERVER_ENDPOINT: "redis-master.default.svc.cluster.local" #!!!!!!!!!!!!!!
+    REDIS_SERVER_ENDPOINT: "redis-master.default.svc.cluster.local"
 
 .var_ui:
   variables:
