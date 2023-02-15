@@ -1,3 +1,4 @@
+---
 appserver_helm_lint:
   stage: helm_lint
   extends:
@@ -22,6 +23,18 @@ ui_build:
     - .var_ui
     - .build_command
 
+appserver_push:
+  stage: push
+  extends:
+    - .var_appserver
+    - .push_command
+
+ui_push:
+  stage: push
+  extends:
+    - .var_ui
+    - .push_command
+
 appserver_deploy:
   stage: deploy
   extends:
@@ -42,10 +55,11 @@ appserver_delete:
     - .yc_init
     - .helm_delete
   when: manual
-  
+
 ui_delete:
   stage: delete
   extends:
     - .yc_init
     - .helm_delete
   when: manual
+...
