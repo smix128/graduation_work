@@ -2,14 +2,14 @@
 version: "3.7"
 services:
   yelb-ui:
-    image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
+    image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-ui:$CI_PIPELINE_ID
     depends_on:
       - yelb-appserver
     ports:
       - 80:80
 
   yelb-appserver:
-    image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP_NAME:$CI_PIPELINE_ID
+    image: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/yelb-appserver:$CI_PIPELINE_ID
     depends_on:
       - redis-server
       - yelb-db
