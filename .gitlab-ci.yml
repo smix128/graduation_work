@@ -45,6 +45,7 @@ test:
   stage: test
   script:
     - docker-compose up -d
+    - sleep 10
     - curl localhost
     - docker-compose down -v
   tags:
