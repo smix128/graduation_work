@@ -46,12 +46,16 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
   hosts:
     - host: ""
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  tls:
+    - secretName: ui-tls
+      hosts:
+        - ""
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local

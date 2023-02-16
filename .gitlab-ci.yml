@@ -83,7 +83,8 @@ yaml_lint:
       --set RACK_ENV=${RACK_ENV} \
       --set REDIS_SERVER_ENDPOINT=${REDIS_SERVER_ENDPOINT} \
       --set YELB_DB_SERVER_ENDPOINT=${YELB_DB_SERVER_ENDPOINT} \
-      --set ingress.hosts[0].host=$SITE_NAME
+      --set ingress.hosts[0].host=$SITE_NAME \
+      --set ingress.tls[0].hosts[0]=$SITE_NAME
 
 .helm_delete:
   script:
