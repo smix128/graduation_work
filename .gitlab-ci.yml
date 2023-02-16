@@ -33,8 +33,6 @@ stages:
     - yc managed-kubernetes cluster get-credentials $YA_K8S_CLUSTER_NAME --external
     - export YA_POSTGRESQL_CLUSTER_ID=$(yc managed-postgresql cluster get --name $YA_POSTGRESQL_CLUSTER_NAME | head -n1 | awk '{print $2}')
     - export YELB_DB_SERVER_ENDPOINT="c-${YA_POSTGRESQL_CLUSTER_ID}.rw.mdb.yandexcloud.net"
-    # - export YC_BALANCER_ID=$(yc load-balancer network-load-balancer list | grep EXTERNAL | awk '{print $2}')
-    # - export YC_BALANCER_IP=$(yc load-balancer network-load-balancer get --id $YC_BALANCER_ID | grep address | head -n1 | awk '{print $2}')
 
 .build_command:
   image: s045841.gitlab.yandexcloud.net:5050/smix128/graduation_work/centos-tools:5
